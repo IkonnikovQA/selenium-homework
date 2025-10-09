@@ -11,6 +11,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import java.time.Duration;
 import static org.junit.jupiter.api.Assertions.*;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class SeleniumHomeworkTests {
@@ -35,11 +37,11 @@ public class SeleniumHomeworkTests {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
         driver = new ChromeDriver(options);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
 
-        driver.get("https://otus.home.kartushin.su/training.html");
+        driver.get("https://otus.home.kartushin.su/training.html  ");
 
-        WebElement inputField = driver.findElement(By.id("textInput"));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement inputField = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("textInput")));
         String textToEnter = "ОТУС";
         inputField.sendKeys(textToEnter);
 
@@ -58,14 +60,14 @@ public class SeleniumHomeworkTests {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--kiosk");
         driver = new ChromeDriver(options);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
 
-        driver.get("https://otus.home.kartushin.su/training.html");
+        driver.get("https://otus.home.kartushin.su/training.html  ");
 
-        WebElement modalButton = driver.findElement(By.id("openModalBtn"));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement modalButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("openModalBtn")));
         modalButton.click();
 
-        WebElement modal = driver.findElement(By.className("modal-content"));
+        WebElement modal = wait.until(ExpectedConditions.presenceOfElementLocated(By.className("modal-content")));
         assertTrue(modal.isDisplayed(), "Модальное окно не открылось");
 
         logger.info("Тест 2 пройден: модальное окно открыто");
@@ -81,22 +83,22 @@ public class SeleniumHomeworkTests {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--start-maximized");
         driver = new ChromeDriver(options);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
 
-        driver.get("https://otus.home.kartushin.su/training.html");
+        driver.get("https://otus.home.kartushin.su/training.html  ");
 
         String name = "фыв";
         String email = "asdf@sdfg.rt";
 
-        WebElement nameInput = driver.findElement(By.id("name"));
-        WebElement emailInput = driver.findElement(By.id("email"));
-        WebElement submitButton = driver.findElement(By.cssSelector("button[type='submit']"));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement nameInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("name")));
+        WebElement emailInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("email")));
+        WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type='submit']")));
 
         nameInput.sendKeys(name);
         emailInput.sendKeys(email);
         submitButton.click();
 
-        WebElement message = driver.findElement(By.id("messageBox"));
+        WebElement message = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("messageBox")));
         String expectedMessage = "Форма отправлена с именем: " + name + " и email: " + email;
         assertTrue(message.getText().contains(expectedMessage), "Сообщение не совпадает с ожидаемым");
 
