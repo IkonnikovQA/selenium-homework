@@ -18,14 +18,30 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 public class SeleniumHomeworkTests {
 
     private static final Logger logger = LogManager.getLogger(SeleniumHomeworkTests.class);
+    private static final String BASE_URL = System.getProperty("BASE_URL", "https://otus.home.kartushin.su/training.html");
 
-    WebDriver driver;
+    private WebDriver driver;
 
-    @AfterAll
+    @BeforeAll
+    public void setupWebDriverManager() {
+        WebDriverManager.chromedriver().setup();
+    }
+
+    private WebDriver createDriverWithArgs(String... args) {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments(args);
+        return new ChromeDriver(options);
+    }
+
+    @AfterEach
     public void tearDown() {
         if (driver != null) {
             driver.close();
         }
+    }
+
+    private WebDriverWait createWait() {
+        return new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     @Test
@@ -33,14 +49,11 @@ public class SeleniumHomeworkTests {
     public void testHeadlessInput() {
         logger.info("Запуск теста: Headless режим");
 
-        WebDriverManager.chromedriver().setup();
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless");
-        driver = new ChromeDriver(options);
+        driver = createDriverWithArgs("--headless");
 
-        driver.get("https://otus.home.kartushin.su/training.html  ");
+        driver.get(BASE_URL);
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait wait = createWait();
         WebElement inputField = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("textInput")));
         String textToEnter = "ОТУС";
         inputField.sendKeys(textToEnter);
@@ -56,14 +69,11 @@ public class SeleniumHomeworkTests {
     public void testKioskModal() {
         logger.info("Запуск теста: Режим киоска");
 
-        WebDriverManager.chromedriver().setup();
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--kiosk");
-        driver = new ChromeDriver(options);
+        driver = createDriverWithArgs("--kiosk");
 
-        driver.get("https://otus.home.kartushin.su/training.html  ");
+        driver.get(BASE_URL);
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait wait = createWait();
         WebElement modalButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("openModalBtn")));
         modalButton.click();
 
@@ -79,17 +89,14 @@ public class SeleniumHomeworkTests {
     public void testFullscreenForm() {
         logger.info("Запуск теста: Полноэкранный режим");
 
-        WebDriverManager.chromedriver().setup();
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--start-maximized");
-        driver = new ChromeDriver(options);
+        driver = createDriverWithArgs("--start-maximized");
 
-        driver.get("https://otus.home.kartushin.su/training.html  ");
+        driver.get(BASE_URL);
 
         String name = "фыв";
         String email = "asdf@sdfg.rt";
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait wait = createWait();
         WebElement nameInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("name")));
         WebElement emailInput = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("email")));
         WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type='submit']")));
